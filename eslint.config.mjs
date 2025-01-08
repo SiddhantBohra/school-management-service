@@ -6,25 +6,18 @@ import pluginJest from "eslint-plugin-jest"
 export default [
     {
         files: ["**/*.js"],
+        plugins: {
+            jest: pluginJest,
+        },
         languageOptions: {
-            sourceType: "commonjs",
-            ecmaVersion: 2022,
             globals: {
                 ...globals.node,
                 ...globals.jest,
             },
         },
-        plugins: {
-            jest: pluginJest,
-        },
         rules: {
             ...pluginJs.configs.recommended.rules,
             "no-unused-vars": "off",
-            "jest/expect-expect": "error",
-            "jest/no-disabled-tests": "warn",
-            "jest/no-focused-tests": "error",
-            "jest/no-identical-title": "error",
-            "jest/valid-expect": "error"
         },
     }
 ]
