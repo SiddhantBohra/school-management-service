@@ -1,23 +1,34 @@
-import globals from "globals"
-import pluginJs from "@eslint/js"
-import pluginJest from "eslint-plugin-jest"
+const globals = require('globals');
+const pluginJest = require('eslint-plugin-jest');
+const eslintConfigPrettier = require('eslint-config-prettier');
+const pluginJs = require('@eslint/js');
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
-    {
-        files: ["**/*.js"],
-        plugins: {
-            jest: pluginJest,
-        },
-        languageOptions: {
-            globals: {
-                ...globals.node,
-                ...globals.jest,
-            },
-        },
-        rules: {
-            ...pluginJs.configs.recommended.rules,
-            "no-unused-vars": "off",
-        },
-    }
-]
+module.exports = [
+  {
+    languageOptions: {
+      sourceType: 'commonjs',
+      ecmaVersion: 2022,
+      globals: {
+        ...globals.node,
+        ...globals.jest,
+      },
+    },
+  },
+  {
+    plugins: {
+      jest: pluginJest,
+    },
+  },
+  {
+    files: ['**/*.js'],
+  },
+  {
+    rules: {
+      ...pluginJs.configs.recommended.rules,
+    },
+  },
+  {
+    ignores: ['node_modules'],
+  },
+  eslintConfigPrettier,
+];
