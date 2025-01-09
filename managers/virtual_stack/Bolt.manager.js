@@ -26,7 +26,7 @@ module.exports = class StackBolt {
       error = error || "Unexpected Failure";
       this.req.stackError = error;
       /** if the last node is the one that is call the end */
-      if(this.index==(this.stack.length-1)){
+      if(this.index===(this.stack.length-1)){
         /** failing over as the last fn is broken. */
         debug(`stack broke: `, error);
         if(this.res.end)this.res.end();
