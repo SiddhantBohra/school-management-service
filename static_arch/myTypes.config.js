@@ -6,14 +6,14 @@
  */
 
 module.exports = {
-    typeOne: {
-        arrField: ["text", "image", "gallery"],
-        NoField: 35,
-        boolField: false,
-    },
-    typeTwo: {
-        arrField: ["text", "url", "video"],
-        NoField: 1000,
-        boolField: true,
-    },
-}
+  typeOne: {
+    arrField: ['text', 'image', 'gallery'],
+    NoField: 35,
+    boolField: false,
+  },
+  typeTwo: {
+    arrField: ['text', 'url', 'video'],
+    NoField: 1000,
+    boolField: true,
+  },
+};

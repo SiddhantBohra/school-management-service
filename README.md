@@ -70,7 +70,7 @@ OYSTER_PREFIX=school_
 
 4. Start Redis (if not using Docker):
 
-    - Install and start Redis-Stack server
+   - Install and start Redis-Stack server
 
 5. Run the application:
 
@@ -190,18 +190,18 @@ The system uses Redis relations to maintain relationships between entities:
 
 1. School-Classroom Relation:
 
-    - `school:<id>/_members` → `[classroom:<id>~1]`
+   - `school:<id>/_members` → `[classroom:<id>~1]`
 
 2. School-Student Relation:
 
-    - `school:<id>/_members` → `[student:<id>~1]`
+   - `school:<id>/_members` → `[student:<id>~1]`
 
 3. Classroom-Student Relation:
 
-    - `classroom:<id>/_members` → `[student:<id>~1]`
+   - `classroom:<id>/_members` → `[student:<id>~1]`
 
 4. School-Admin Relation:
-    - `school:<id>/_members` → `[user:<id>~1]`
+   - `school:<id>/_members` → `[user:<id>~1]`
 
 ## Testing
 
@@ -220,20 +220,20 @@ tests/
 
 1. **Unit Tests**
 
-    - Validator functions
-    - Helper utilities
-    - Data transformations
+   - Validator functions
+   - Helper utilities
+   - Data transformations
 
 2. **Integration Tests**
 
-    - API endpoints
-    - Database operations
-    - Authentication flow
+   - API endpoints
+   - Database operations
+   - Authentication flow
 
 3. **Authorization Tests**
-    - Role-based access
-    - Permission checks
-    - Token validation
+   - Role-based access
+   - Permission checks
+   - Token validation
 
 ### Test Coverage
 
@@ -272,45 +272,45 @@ Tests run in an isolated environment with:
 
 1. **Authentication**:
 
-    - Two-tier JWT system (long and short tokens)
-    - Password hashing using bcrypt
-    - Token expiration and rotation
+   - Two-tier JWT system (long and short tokens)
+   - Password hashing using bcrypt
+   - Token expiration and rotation
 
 2. **Authorization**:
 
-    - Role-based access control (RBAC)
-    - Resource-level permissions
-    - School-specific access control
+   - Role-based access control (RBAC)
+   - Resource-level permissions
+   - School-specific access control
 
 3. **Rate Limiting**:
 
-    - IP-based rate limiting
-    - Configurable limits per endpoint
-    - Redis-backed rate limit tracking
+   - IP-based rate limiting
+   - Configurable limits per endpoint
+   - Redis-backed rate limit tracking
 
 4. **Input Validation**:
-    - Schema-based validation
-    - Data sanitization
-    - Type checking
+   - Schema-based validation
+   - Data sanitization
+   - Type checking
 
 ## Performance Considerations
 
 1. **Caching**:
 
-    - Redis for data storage and caching
-    - Efficient relation-based queries
-    - Optimized data structures
+   - Redis for data storage and caching
+   - Efficient relation-based queries
+   - Optimized data structures
 
 2. **Scalability**:
 
-    - Stateless API design
-    - Docker containerization
-    - Horizontal scaling support
+   - Stateless API design
+   - Docker containerization
+   - Horizontal scaling support
 
 3. **Monitoring**:
-    - Error logging and tracking
-    - Performance metrics
-    - Request/response timing
+   - Error logging and tracking
+   - Performance metrics
+   - Request/response timing
 
 ## API Documentation
 
@@ -530,16 +530,16 @@ The API uses a two-tier JWT-based authentication system:
 
 1. **Long Tokens**:
 
-    - Issued during login/registration
-    - Valid for 3 years
-    - Used for long-term authentication
-    - Required for creating short tokens
+   - Issued during login/registration
+   - Valid for 3 years
+   - Used for long-term authentication
+   - Required for creating short tokens
 
 2. **Short Tokens**:
-    - Created from long tokens
-    - Valid for 1 year
-    - Used for regular API access
-    - Tied to specific devices/user-agents
+   - Created from long tokens
+   - Valid for 1 year
+   - Used for regular API access
+   - Tied to specific devices/user-agents
 
 Include the appropriate token in the Authorization header:
 
@@ -551,21 +551,21 @@ Authorization: token <token>
 
 - **Superadmin**:
 
-    - Full system access
-    - Can manage all schools, classrooms, and students
-    - Can manage users and their roles
-    - Can perform all administrative actions
+  - Full system access
+  - Can manage all schools, classrooms, and students
+  - Can manage users and their roles
+  - Can perform all administrative actions
 
 - **School Admin**:
 
-    - Access limited to assigned school resources
-    - Can manage classrooms and students within their school
-    - Cannot create/delete schools or manage other school admins
+  - Access limited to assigned school resources
+  - Can manage classrooms and students within their school
+  - Cannot create/delete schools or manage other school admins
 
 - **User**:
-    - Basic access level
-    - Can view their own user information
-    - Cannot perform administrative actions
+  - Basic access level
+  - Can view their own user information
+  - Cannot perform administrative actions
 
 ## Deployment
 
@@ -620,37 +620,37 @@ ISC License
 
 1. **Data Storage**
 
-    - Redis is sufficient for the scale of operations
-    - Data consistency is maintained through atomic operations
-    - Relationships are managed through Redis sets
+   - Redis is sufficient for the scale of operations
+   - Data consistency is maintained through atomic operations
+   - Relationships are managed through Redis sets
 
 2. **Authentication**
 
-    - Users primarily access from web browsers
-    - Long tokens are stored securely by clients
-    - Device-specific short tokens enhance security
+   - Users primarily access from web browsers
+   - Long tokens are stored securely by clients
+   - Device-specific short tokens enhance security
 
 3. **Business Rules**
 
-    - A student belongs to only one classroom at a time
-    - A classroom belongs to only one school
-    - School admins manage only their assigned schools
-    - Resources are simple string identifiers
+   - A student belongs to only one classroom at a time
+   - A classroom belongs to only one school
+   - School admins manage only their assigned schools
+   - Resources are simple string identifiers
 
 4. **Performance**
 
-    - Rate limiting is sufficient at 100 requests per minute
-    - Redis can handle the expected load
-    - Network latency is not a major concern
+   - Rate limiting is sufficient at 100 requests per minute
+   - Redis can handle the expected load
+   - Network latency is not a major concern
 
 5. **Security**
 
-    - All communication is over HTTPS
-    - Passwords are properly hashed
-    - Tokens are securely stored
-    - Input is properly sanitized
+   - All communication is over HTTPS
+   - Passwords are properly hashed
+   - Tokens are securely stored
+   - Input is properly sanitized
 
 6. **Scalability**
-    - Horizontal scaling is possible
-    - Redis cluster can be implemented if needed
-    - Stateless design allows for load balancing
+   - Horizontal scaling is possible
+   - Redis cluster can be implemented if needed
+   - Stateless design allows for load balancing
