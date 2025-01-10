@@ -1,29 +1,25 @@
 const layers = {
     board: {
         /** all board are public by default */
-        _default: { anyoneCan: 'read', ownerCan: 'audit' },
-        _public: { anyoneCan: 'create', ownerCan: 'audit' },
-        _private: { anyoneCan: 'none' },
-        _store: { anyoneCan: 'read', noOneCan: 'create' },
+        _default: { anyoneCan: "read", ownerCan: "audit" },
+        _public: { anyoneCan: "create", ownerCan: "audit" },
+        _private: { anyoneCan: "none" },
+        _store: { anyoneCan: "read", noOneCan: "create" },
 
-        user: {
-            _default: { anyoneCan: 'read', superAdminCan: 'update' },
-            _public: { anyoneCan: 'none' },
-            _private: { inherit: true },
-            _store: { inherit: true },
-        },
         school: {
-            _default: { adminCan: 'read', superAdminCan: 'update' },
-            _public: { anyoneCan: 'none' },
+            _default: { adminCan: "read", superAdminCan: "update" },
+            _public: { anyoneCan: "none" },
             _private: { inherit: true },
             _store: { inherit: true },
-            classRoom: {
-                _default: { adminCan: 'update', superAdminCan: 'read' },
+
+            class: {
+                _default: { adminCan: "update", superAdminCan: "read" },
                 _public: { inherit: true },
                 _private: { inherit: true },
                 _store: { inherit: true },
+
                 student: {
-                    _default: { adminCan: 'update', superAdminCan: 'none' },
+                    _default: { adminCan: "update", superAdminCan: "none" },
                     _public: { inherit: true },
                     _private: { inherit: true },
                     _store: { inherit: true },
@@ -31,7 +27,7 @@ const layers = {
             },
         },
     },
-};
+}
 
 const actions = {
     blocked: -1,
@@ -42,9 +38,6 @@ const actions = {
     config: 5,
     delete: 6,
     update: 7,
-};
+}
 
-module.exports = {
-    layers,
-    actions,
-};
+module.exports = { layers, actions }

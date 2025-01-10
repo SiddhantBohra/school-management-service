@@ -83,11 +83,16 @@ module.exports = class UserManager {
         }
     }
 
-    async createUser({ username, email, password, role = "student", res }) {
+    async createUser({ username, email, password, role = "user", res }) {
         // Validate input
         const validationResult = await this.validators.user.createUser({ username, email, password, role })
         if (validationResult) {
-            return validationResult;
+            this.responseDispatcher.dispatch(res, {
+                code: 400,
+                message: "Email already exists",
+                errors: validationResult
+            })
+            return { selfHandleResponse: true }
         }
 
         // Create user
@@ -106,11 +111,12 @@ module.exports = class UserManager {
             if (user.error.includes("already exists")) {
                 this.responseDispatcher.dispatch(res, {
                     code: 409,
-                    message: `User with email: ${email} already exists`,
+                    message: "Email already exists",
                 })
                 return { selfHandleResponse: true }
             }
 
+            console.error("Failed to create user:", user.error)
             this.responseDispatcher.dispatch(res, {
                 ok: false,
                 code: 500,
@@ -120,11 +126,15 @@ module.exports = class UserManager {
         }
 
         const userId = email
+        // Set role-based permissions
         await this._setPermissions({ userId: userId, role })
+
+        // Generate tokens
         const longToken = this.tokenManager.genLongToken({
             userId: userId,
             userKey: user.key,
         })
+
         const { password: _, ...userWithoutPassword } = user
         return {
             user: userWithoutPassword,
@@ -285,13 +295,13 @@ module.exports = class UserManager {
 
         // Only superadmin or the user themselves can view user details
         const canViewUser =
-          (await this.shark.isGranted({
-              layer: "board.user",
-              action: "read",
-              userId,
-              nodeId: `board.user.${id}`,
-              role: "superadmin",
-          })) || userId === id
+            (await this.shark.isGranted({
+                layer: "board.user",
+                action: "read",
+                userId,
+                nodeId: `board.user.${id}`,
+                role: "superadmin",
+            })) || userId === id
 
         if (!canViewUser) {
             this.responseDispatcher.dispatch(res, {
@@ -302,6 +312,7 @@ module.exports = class UserManager {
             return { selfHandleResponse: true }
         }
 
+        // Get user
         const user = await this.oyster.call("get_block", `${this.userPrefix}:${id}`)
         if (!user || this.utils.isEmptyObject(user)) {
             this.responseDispatcher.dispatch(res, {
@@ -311,6 +322,7 @@ module.exports = class UserManager {
             })
             return { selfHandleResponse: true }
         }
+
         const { password: _, ...userWithoutPassword } = user
         return { user: userWithoutPassword }
     }
