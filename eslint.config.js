@@ -25,6 +25,7 @@ module.exports = [
   {
     rules: {
       ...pluginJs.configs.recommended.rules,
+      "no-unused-vars": "off",
     },
   },
   {
