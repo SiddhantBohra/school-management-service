@@ -1,0 +1,6 @@
+{
+  "watch": ["./"],
+  "execMap": {
+    "*js": "nodemon index.js"
+  }
+}
