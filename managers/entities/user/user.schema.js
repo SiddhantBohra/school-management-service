@@ -18,7 +18,7 @@ module.exports = {
         {
             model: "role",
             path: "role",
-            default: "student",
+            default: "user",
         },
     ],
     updateUser: [

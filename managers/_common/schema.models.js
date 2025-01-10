@@ -104,7 +104,7 @@ module.exports = {
     },
     role: {
         type: 'string',
-        regex: /^(superAdmin|admin|student)$/i,
+        regex: /^(superAdmin|admin|user)$/i,
     },
     capacity: {
         type: 'Number',
@@ -115,6 +115,9 @@ module.exports = {
         type: 'Number',
         min: 1,
         max: 12,
+    },
+    section: {
+        type: 'String',
     },
     academicYear: {
         type: 'String',

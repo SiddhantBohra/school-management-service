@@ -95,7 +95,7 @@ module.exports = class TimeMachine {
         withScores: true,
       });
       const postKeys = Object.keys(posts);
-      if (postKeys.length != 0) {
+      if (postKeys.length !== 0) {
         const trimmedPosts = postKeys.splice(0, Math.ceil(postKeys.length * 0.15));
         this.oyster.call('update_relations', { _id: mixTopic, add: { _members: trimmedPosts } });
       }
