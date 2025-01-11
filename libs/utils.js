@@ -6,7 +6,7 @@ const slugify = (text) => {
   const newText = text
     .split('')
     .map((letter, i) =>
-      letter.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i))
+      letter.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i)),
     );
 
   return newText

@@ -38,11 +38,11 @@ module.exports = class ContentToken {
       const messageWithNonceAsUint8Array = decodeBase64(messageWithNonce);
       const nonce = messageWithNonceAsUint8Array.slice(
         0,
-        secretbox.nonceLength
+        secretbox.nonceLength,
       );
       const message = messageWithNonceAsUint8Array.slice(
         secretbox.nonceLength,
-        messageWithNonce.length
+        messageWithNonce.length,
       );
 
       const decrypted = secretbox.open(message, nonce, keyUint8Array);

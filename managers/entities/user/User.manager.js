@@ -1,4 +1,3 @@
-
 const bcrypt = require('bcrypt');
 module.exports = class User {
   constructor({
@@ -104,14 +103,14 @@ module.exports = class User {
       password,
       role,
     });
-    if (validationResult)  {
+    if (validationResult) {
       this.responseDispatcher.dispatch(res, {
         code: 400,
         message: 'Email already exists',
         errors: validationResult,
       });
       return { selfHandleResponse: true };
-    };
+    }
 
     // Creation Logic
     const hashedPassword = await this._hashPassword(password);
@@ -176,10 +175,7 @@ module.exports = class User {
     }
 
     // Verify Password
-    const isPasswordValid = await this._verifyPassword(
-      password,
-      user.password
-    );
+    const isPasswordValid = await this._verifyPassword(password, user.password);
     if (!isPasswordValid) {
       this.responseDispatcher.dispatch(res, {
         ok: false,

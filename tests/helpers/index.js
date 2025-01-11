@@ -37,7 +37,7 @@ const mockManagers = {
         if (
           actions[action] <= actions['update'] &&
           ['board.school.classRoom', 'board.school.classRoom.student'].includes(
-            layer
+            layer,
           )
         ) {
           return true;

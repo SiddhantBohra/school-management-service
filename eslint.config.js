@@ -26,6 +26,9 @@ module.exports = [
     rules: {
       ...pluginJs.configs.recommended.rules,
       'no-unused-vars': 'off',
+      'no-useless-escape': 'off',
+      'no-prototype-builtins': 'off',
+      'no-undef': 'off',
     },
   },
   {

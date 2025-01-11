@@ -253,7 +253,9 @@ module.exports = class School {
     }
 
     // Fetch schools
-    const schools = await this.oyster.call('get_blocks', { _label: this._label });
+    const schools = await this.oyster.call('get_blocks', {
+      _label: this._label,
+    });
     if (!schools || this.utils.isObjEmpty(schools)) {
       this.responseDispatcher.dispatch(res, {
         ok: false,

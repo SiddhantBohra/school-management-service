@@ -25,10 +25,10 @@ module.exports = class Classroom {
   }
 
   async _validatePermission({
-                              userId,
-                              action,
-                              nodeId = 'board.school.classRoom',
-                            }) {
+    userId,
+    action,
+    nodeId = 'board.school.classRoom',
+  }) {
     const user = await this._getUser({ userId });
     if (user.error) return user;
 
@@ -42,13 +42,13 @@ module.exports = class Classroom {
     return { error: allowed ? undefined : 'Permission denied' };
   }
   async createClassroom({
-                          __token,
-                          schoolId,
-                          grade,
-                          capacity,
-                          academicYear,
-                          res,
-                        }) {
+    __token,
+    schoolId,
+    grade,
+    capacity,
+    academicYear,
+    res,
+  }) {
     const { userId } = __token;
 
     const canCreateClassroom = await this._validatePermission({
