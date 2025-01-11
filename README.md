@@ -45,7 +45,7 @@ A RESTful API service for managing schools, classrooms, and students with role-b
 
 ```bash
 git clone <repository-url>
-cd school-management-api
+cd school-management-service
 ```
 
 2. Install dependencies:
@@ -574,14 +574,14 @@ Authorization: token <token>
 1. Build the Docker image:
 
 ```bash
-docker build -t school-management-api .
+docker build -t school-management-service .
 ```
 
 2. Push to container registry:
 
 ```bash
-docker tag school-management-api your-registry/school-management-api
-docker push your-registry/school-management-api
+docker tag school-management-service your-registry/school-management-service
+docker push your-registry/school-management-service
 ```
 
 3. Deploy using Docker Compose:
