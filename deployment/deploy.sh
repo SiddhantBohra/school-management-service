@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Update package list and install necessary packages
 sudo yum update -y
 sudo yum install -y docker jq
@@ -16,14 +19,14 @@ unzip awscliv2.zip
 sudo ./aws/install
 
 # Fetch environment variables from AWS Parameter Store
-PARAMS=$(aws ssm get-parameter --name "/myapp/env" --with-decryption --query "Parameter.Value" --output text)
-echo $PARAMS | jq -r 'to_entries | .[] | "export \(.key)=\(.value)"' >> /etc/profile
+PARAMS=$(aws ssm get-parameters-by-path --path "/myapp/env" --with-decryption --query "Parameters[*].{Name:Name,Value:Value}" --output json)
+echo $PARAMS | jq -r '.[] | "export \(.Name | split("/")[-1])=\(.Value)"' >> /etc/profile
 
 # Load environment variables
 source /etc/profile
 
-# Pull the latest Docker image
-docker pull my-docker-image:latest
+# Build the Docker image
+docker build -t school-management-api .
 
 # Run Docker container
-docker run -d --env-file /etc/profile --name myapp -p 5111:5111 my-docker-image:latest
+docker run -d --env-file /etc/profile --name myapp -p 5111:5111 school-management-api

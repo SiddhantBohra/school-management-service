@@ -34,6 +34,7 @@ const isNormalInteg = (str) => {
  * @param {*} path 'a.b.c'
  * @param {*} obj an object to extract value of
  */
+
 const getDeepValue = (path, obj) => {
   for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
     var level = obj[path[i]];
