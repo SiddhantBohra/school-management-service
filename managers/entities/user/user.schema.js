@@ -1,8 +1,8 @@
 module.exports = {
   createUser: [
     {
-      model: 'username',
-      path: 'username',
+      model: 'userName',
+      path: 'userName',
       required: true,
     },
     {
@@ -21,10 +21,29 @@ module.exports = {
       default: 'user',
     },
   ],
+  loginUser: [
+    {
+      model: 'email',
+      path: 'email',
+      required: true,
+    },
+    {
+      model: 'password',
+      path: 'password',
+      required: true,
+    },
+  ],
+  getUser: [
+    {
+      type: 'String',
+      path: 'id',
+      required: true,
+    },
+  ],
   updateUser: [
     {
-      model: 'username',
-      path: 'username',
+      model: 'userName',
+      path: 'userName',
     },
     {
       model: 'email',
@@ -35,29 +54,10 @@ module.exports = {
       path: 'role',
     },
   ],
-  getUser: [
-    {
-      type: 'String',
-      path: 'id',
-      required: true,
-    },
-  ],
   deleteUser: [
     {
       type: 'String',
       path: 'id',
-      required: true,
-    },
-  ],
-  loginUser: [
-    {
-      model: 'email',
-      path: 'email',
-      required: true,
-    },
-    {
-      model: 'password',
-      path: 'password',
       required: true,
     },
   ],

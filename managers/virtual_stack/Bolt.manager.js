@@ -75,7 +75,7 @@ module.exports = class StackBolt {
 
     if (!fn) {
       console.log('___Function not found __ Jumping ____ ');
-      this.end({ error: `function not found on function ${fnKey} ` });
+      this.end({ error: `function not found on function ${fnKey.key} ` });
     } else {
       /** contains information about which app, which route, and which module
        * is using the function

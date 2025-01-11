@@ -1,3 +1,4 @@
+const isEmpty = require('lodash/isEmpty');
 const slugify = (text) => {
   const from = 'ãàáäâẽèéëêìíïîõòóöôùúüûñç·/_,:;';
   const to = 'aaaaaeeeeeiiiiooooouuuunc------';
@@ -14,8 +15,8 @@ const slugify = (text) => {
     .trim() // Remove whitespace from both sides of a string
     .replace(/\s+/g, '-') // Replace spaces with -
     .replace(/&/g, '-y-') // Replace & with 'and'
-    .replace(/[^\w-]+/g, '') // Remove all non-word chars
-    .replace(/--+/g, '-'); // Replace multiple - with single -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-'); // Replace multiple - with single -
 };
 
 /**
@@ -33,13 +34,10 @@ const isNormalInteg = (str) => {
  * @param {*} path 'a.b.c'
  * @param {*} obj an object to extract value of
  */
+
 const getDeepValue = (path, obj) => {
-  for (
-    var i = 0, pathParts = path.split('.'), len = pathParts.length;
-    i < len;
-    i++
-  ) {
-    var level = obj[pathParts[i]];
+  for (var i = 0, path = path.split('.'), len = path.length; i < len; i++) {
+    var level = obj[path[i]];
     if (!level) return null;
     obj = level;
   }
@@ -89,14 +87,14 @@ const flattenObject = (ob, marker) => {
   if (!marker) marker = '.';
   var toReturn = {};
   for (var i in ob) {
-    if (!Object.prototype.hasOwnProperty.call(ob, i)) continue;
+    if (!ob.hasOwnProperty(i)) continue;
     if (typeof ob[i] == 'object' && ob[i] !== null) {
       if (Array.isArray(ob[i])) {
         toReturn[i] = ob[i];
       } else {
         var flatObject = flattenObject(ob[i], marker);
         for (var x in flatObject) {
-          if (!Object.prototype.hasOwnProperty.call(flatObject, x)) continue;
+          if (!flatObject.hasOwnProperty(x)) continue;
           toReturn[i + marker + x] = flatObject[x];
         }
       }
@@ -122,16 +120,15 @@ const hrTime = () => {
   return Number(process.hrtime.bigint());
 };
 
-const regExpEscape = (s) => {
+_regExpEscape = (s) => {
   return s.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
 };
-
-const wildcardToRegExp = (s) => {
-  return new RegExp('^' + s.split(/\*+/).map(regExpEscape).join('.*') + '$');
+_wildcardToRegExp = (s) => {
+  return new RegExp('^' + s.split(/\*+/).map(_regExpEscape).join('.*') + '$');
 };
 
 const match = (str, model) => {
-  return wildcardToRegExp(model).test(str);
+  return _wildcardToRegExp(model).test(str);
 };
 
 const isChance = (max) => {
@@ -139,9 +136,8 @@ const isChance = (max) => {
   let value = Math.floor(Math.random() * (max - min + 1) + min);
   return min == value;
 };
-
-const isEmptyObject = (obj) => {
-  return Object.keys(obj).length === 0;
+const isObjEmpty = (obj) => {
+  return isEmpty(obj);
 };
 
 module.exports = {
@@ -157,5 +153,5 @@ module.exports = {
   hrTime,
   match,
   isChance,
-  isEmptyObject,
+  isObjEmpty,
 };
