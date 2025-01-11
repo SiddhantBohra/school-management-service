@@ -10,7 +10,6 @@ module.exports = ({ cache, config }) => {
         await cache.key.set({ key, value: 0 });
       }
       const currentCount = (await cache.key.get({ key })) || 0;
-      console.log(WINDOW_SIZE_IN_SECONDS, MAX_REQUESTS_PER_WINDOW);
       if (currentCount >= MAX_REQUESTS_PER_WINDOW) {
         return end({
           error: 'Too many requests',
@@ -35,7 +34,6 @@ module.exports = ({ cache, config }) => {
       next();
     } catch (error) {
       console.error('Rate limiting error:', error);
-      // If Redis fails, allow the request but log the error
       next();
     }
   };
