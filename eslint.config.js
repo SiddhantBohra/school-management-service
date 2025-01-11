@@ -29,7 +29,7 @@ module.exports = [
       'no-useless-escape': 'off',
       'no-prototype-builtins': 'off',
       'no-undef': 'off',
-      'no-redeclare': 'off'
+      'no-redeclare': 'off',
     },
   },
   {
