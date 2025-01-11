@@ -1,65 +1,30 @@
 const { nanoid } = require('nanoid');
 
-/**
- * Manages school-related operations in the school management system.
- * Handles CRUD operations and school administrator assignments.
- */
-module.exports = class SchoolManager {
-  /**
-   * Initializes the SchoolManager with required dependencies
-   * @param {Object} params - Dependency injection parameters
-   * @param {Object} params.utils - Utility functions
-   * @param {Object} params.config - System configuration
-   * @param {Object} params.cortex - Core system functions
-   * @param {Object} params.managers - Other manager instances
-   * @param {Object} params.validators - Input validation functions
-   * @param {Object} params.oyster - Data persistence layer
-   */
-  constructor({ utils, cache, config, cortex, managers, validators, oyster }) {
+module.exports = class School {
+  constructor({ utils, cache, managers, validators, oyster } = {}) {
     this.utils = utils;
-    this.config = config;
-    this.cortex = cortex;
-    this.validators = validators;
+    this.cache = cache;
     this.oyster = oyster;
     this.shark = managers.shark;
+    this.validators = validators;
     this.responseDispatcher = managers.responseDispatcher;
-    this.schoolPrefix = 'school';
-
-    // Exposed HTTP endpoints
+    this._label = 'schools';
     this.httpExposed = [
       'createSchool',
-      'patch=updateSchool',
-      'delete=deleteSchool',
       'get=getSchool',
-      'assignSchoolAdmin',
+      'get=getSchools',
+      'delete=deleteSchool',
+      'patch=updateSchool',
     ];
   }
-
-  /**
-   * Retrieves user information by userId
-   * @private
-   * @param {Object} params - Function parameters
-   * @param {string} params.userId - The ID of the user to retrieve
-   * @returns {Promise<Object>} User object or error
-   */
   async _getUser({ userId }) {
-    const user = await this.oyster.call('get_block', `user:${userId}`);
-    if (!user || this.utils.isEmptyObject(user)) {
+    const user = await this.oyster.call('get_block', `${userId}`);
+    if (!user || this.utils.isObjEmpty(user)) {
       return { error: 'Invalid Token' };
     }
     return user;
   }
 
-  /**
-   * Validates user permissions for specific actions
-   * @private
-   * @param {Object} params - Function parameters
-   * @param {string} params.userId - The ID of the user
-   * @param {string} params.action - The action to validate (create, read, update, delete, config)
-   * @param {string} [params.nodeId] - The node ID for permission check
-   * @param {string} [params.schoolId] - School ID for school-specific permission checks
-   * @returns {Promise<Object>} Validation result
-   */
   async _validatePermission({
     userId,
     action,
@@ -69,49 +34,31 @@ module.exports = class SchoolManager {
     const user = await this._getUser({ userId });
     if (user.error) return user;
 
-    if (!user.role) {
-      return { error: 'User role not found' };
-    }
-
-    // For school admins, check if they are assigned to this specific school
-    if (user.role === 'schoolAdmin' && schoolId) {
-      const schoolAdmins = await this.oyster.call('nav_relation', {
-        _id: `${this.schoolPrefix}:${schoolId}`,
+    if (user.role === 'admin' && schoolId) {
+      const admin = await this.oyster.call('nav_relation', {
+        _id: `${this._label}:${schoolId}`,
         relation: '_members',
         label: 'user',
         withScores: true,
       });
 
-      if (!schoolAdmins || !schoolAdmins[`user:${userId}`]) {
+      if (!admin || !admin[`user:${userId}`]) {
         return { error: 'Permission denied' };
       }
     }
 
-    const canDoAction = await this.shark.isGranted({
+    const allowed = await this.shark.isGranted({
       layer: 'board.school',
       action,
       userId,
       nodeId,
       role: user.role,
     });
-    return { error: canDoAction ? undefined : 'Permission denied' };
+    return { error: allowed ? undefined : 'Permission denied' };
   }
-
-  /**
-   * Creates a new school record
-   * @param {Object} params - School creation parameters
-   * @param {Object} params.__token - Authentication token
-   * @param {string} params.name - School name
-   * @param {string} params.address - School address
-   * @param {string} params.phone - Contact phone number
-   * @param {string} params.email - School email address
-   * @param {Object} params.res - Response object
-   * @returns {Promise<Object>} Created school object or error
-   */
   async createSchool({ __token, name, address, phone, email, res }) {
     const { userId } = __token;
 
-    // Permission check
     const canCreateSchool = await this._validatePermission({
       userId,
       action: 'create',
@@ -121,20 +68,27 @@ module.exports = class SchoolManager {
       return canCreateSchool;
     }
 
-    // Validate input
+    // Validate inputs
     const validationResult = await this.validators.school.createSchool({
       name,
       address,
       phone,
       email,
     });
-    if (validationResult) return validationResult;
+    if (validationResult) {
+      this.responseDispatcher.dispatch(res, {
+        code: 400,
+        message: 'Invalid Input',
+        errors: validationResult,
+      });
+      return { selfHandleResponse: true };
+    }
 
-    // Create school
+    // Create School
     const schoolId = nanoid();
-    const school = await this.oyster.call('add_block', {
+    const createdSchool = await this.oyster.call('add_block', {
       _id: schoolId,
-      _label: this.schoolPrefix,
+      _label: this._label,
       name,
       address,
       phone,
@@ -144,16 +98,16 @@ module.exports = class SchoolManager {
       _admins: [`user:${userId}`],
     });
 
-    if (school.error) {
-      if (school.error.includes('already exists')) {
+    if (createdSchool.error) {
+      if (createdSchool.error.includes('already exists')) {
         this.responseDispatcher.dispatch(res, {
           code: 409,
-          message: 'School already exists',
+          message: 'School name already exists',
         });
         return { selfHandleResponse: true };
       }
 
-      console.error('Failed to create school:', school.error);
+      console.error('Failed to create school:', createdSchool.error);
       this.responseDispatcher.dispatch(res, {
         ok: false,
         code: 500,
@@ -162,21 +116,35 @@ module.exports = class SchoolManager {
       return { selfHandleResponse: true };
     }
 
+    return { school: createdSchool };
+  }
+  async getSchool({ __token, __query, res }) {
+    const { userId } = __token;
+    const { id } = __query;
+
+    const canReadSchool = await this._validatePermission({
+      userId,
+      action: 'read',
+      schoolId: id,
+    });
+
+    if (canReadSchool.error) {
+      return canReadSchool;
+    }
+
+    // Get school
+    const school = await this.oyster.call('get_block', `${id}`);
+    if (!school || this.utils.isObjEmpty(school)) {
+      this.responseDispatcher.dispatch(res, {
+        ok: false,
+        code: 404,
+        message: 'School not found',
+      });
+      return { selfHandleResponse: true };
+    }
+
     return { school };
   }
-
-  /**
-   * Updates an existing school's information
-   * @param {Object} params - School update parameters
-   * @param {Object} params.__token - Authentication token
-   * @param {string} params.id - School ID
-   * @param {string} [params.name] - Updated school name
-   * @param {string} [params.address] - Updated address
-   * @param {string} [params.phone] - Updated phone number
-   * @param {string} [params.email] - Updated email address
-   * @param {Object} params.res - Response object
-   * @returns {Promise<Object>} Updated school object or error
-   */
   async updateSchool({ __token, id, name, address, phone, email, res }) {
     const { userId } = __token;
 
@@ -192,19 +160,24 @@ module.exports = class SchoolManager {
 
     // Validate input
     const validationResult = await this.validators.school.updateSchool({
+      id,
       name,
       address,
       phone,
       email,
     });
-    if (validationResult) return validationResult;
+    if (validationResult) {
+      this.responseDispatcher.dispatch(res, {
+        code: 400,
+        message: 'Invalid Input',
+        errors: validationResult,
+      });
+      return { selfHandleResponse: true };
+    }
 
     // Get school
-    const school = await this.oyster.call(
-      'get_block',
-      `${this.schoolPrefix}:${id}`,
-    );
-    if (!school || this.utils.isEmptyObject(school)) {
+    const school = await this.oyster.call('get_block', `${id}`);
+    if (!school || this.utils.isObjEmpty(school)) {
       this.responseDispatcher.dispatch(res, {
         ok: false,
         code: 404,
@@ -223,24 +196,15 @@ module.exports = class SchoolManager {
     updates.updatedBy = userId;
 
     const updatedSchool = await this.oyster.call('update_block', {
-      _id: `${this.schoolPrefix}:${id}`,
+      _id: `${this._label}:${id}`,
       ...updates,
     });
 
     return { school: updatedSchool };
   }
-
-  /**
-   * Deletes a school record and its relations
-   * @param {Object} params - School deletion parameters
-   * @param {Object} params.__token - Authentication token
-   * @param {string} params.id - School ID to delete
-   * @param {Object} params.res - Response object
-   * @returns {Promise<Object>} Deletion result
-   */
-  async deleteSchool({ __token, id, res }) {
+  async deleteSchool({ __token, __query, res }) {
     const { userId } = __token;
-
+    const { id } = __query;
     // Permission check
     const canDeleteSchool = await this._validatePermission({
       userId,
@@ -252,11 +216,8 @@ module.exports = class SchoolManager {
     }
 
     // Get school
-    const school = await this.oyster.call(
-      'get_block',
-      `${this.schoolPrefix}:${id}`,
-    );
-    if (!school || this.utils.isEmptyObject(school)) {
+    const school = await this.oyster.call('get_block', `${id}`);
+    if (!school || this.utils.isObjEmpty(school)) {
       this.responseDispatcher.dispatch(res, {
         ok: false,
         code: 404,
@@ -265,105 +226,43 @@ module.exports = class SchoolManager {
       return { selfHandleResponse: true };
     }
 
-    // Delete school
-    await this.oyster.call('delete_block', `${this.schoolPrefix}:${id}`);
-
-    // Remove all school relations
+    // Delete school & its relations
+    await this.oyster.call('delete_block', `${id}`);
     await this.oyster.call('delete_relations', {
-      _id: `${this.schoolPrefix}:${id}`,
+      _id: `${this._label}:${id}`,
     });
 
     return { message: 'School deleted successfully' };
   }
-
-  /**
-   * Retrieves a specific school's information
-   * @param {Object} params - School retrieval parameters
-   * @param {Object} params.__token - Authentication token
-   * @param {string} params.id - School ID to retrieve
-   * @param {Object} params.res - Response object
-   * @returns {Promise<Object>} School information or error
-   */
-  async getSchool({ __token, id, res }) {
-    const { userId } = __token;
-
-    // Permission check - pass the school ID for validation
-    const canReadSchool = await this._validatePermission({
-      userId,
-      action: 'read',
-      schoolId: id,
-    });
-
-    if (canReadSchool.error) {
-      return canReadSchool;
-    }
-
-    // Get school
-    const school = await this.oyster.call(
-      'get_block',
-      `${this.schoolPrefix}:${id}`,
-    );
-    if (!school || this.utils.isEmptyObject(school)) {
-      this.responseDispatcher.dispatch(res, {
-        ok: false,
-        code: 404,
-        message: 'School not found',
-      });
-      return { selfHandleResponse: true };
-    }
-
-    return { school };
-  }
-
-  /**
-   * Assigns a user as a school administrator
-   * @param {Object} params - Admin assignment parameters
-   * @param {Object} params.__token - Authentication token
-   * @param {string} params.schoolId - School ID to assign admin to
-   * @param {string} params.adminUserId - User ID to be assigned as admin
-   * @param {Object} params.res - Response object
-   * @returns {Promise<Object>} Assignment result or error
-   */
-  async assignSchoolAdmin({ __token, schoolId, adminUserId, res }) {
+  async getSchools({ __token, res }) {
     const { userId } = __token;
 
     // Permission check
-    const canAssignAdmin = await this._validatePermission({
+    const canReadSchools = await this._validatePermission({
       userId,
-      action: 'config',
+      action: 'read',
     });
 
-    if (canAssignAdmin.error) {
-      return canAssignAdmin;
-    }
-
-    // Check if school exists
-    const school = await this.oyster.call(
-      'get_block',
-      `${this.schoolPrefix}:${schoolId}`,
-    );
-    if (!school || this.utils.isEmptyObject(school)) {
+    if (canReadSchools.error) {
       this.responseDispatcher.dispatch(res, {
         ok: false,
-        code: 404,
-        message: 'School not found',
+        code: 403,
+        message: canReadSchools.error,
       });
       return { selfHandleResponse: true };
     }
 
-    // Create relation between admin and school using proper score format
-    const relationResult = await this.oyster.call('update_relations', {
-      _id: `${this.schoolPrefix}:${schoolId}`,
-      add: {
-        _members: [`user:${adminUserId}~1`], // Add score of 1 to indicate admin relationship
-      },
-    });
-
-    if (relationResult.error) {
-      console.error('Failed to create relation:', relationResult.error);
-      return { error: 'Failed to assign school admin' };
+    // Fetch schools
+    const schools = await this.oyster.call('get_blocks', { _label: this._label });
+    if (!schools || this.utils.isObjEmpty(schools)) {
+      this.responseDispatcher.dispatch(res, {
+        ok: false,
+        code: 404,
+        message: 'No schools found',
+      });
+      return { selfHandleResponse: true };
     }
 
-    return { message: 'School admin assigned successfully' };
+    return { schools };
   }
 };

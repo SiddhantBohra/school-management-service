@@ -1,7 +1,7 @@
 module.exports = {
   createClassroom: [
     {
-      model: 'classCapacity',
+      model: 'capacity',
       path: 'capacity',
       required: true,
     },
@@ -11,19 +11,9 @@ module.exports = {
       required: true,
     },
     {
-      model: 'section',
-      path: 'section',
-      required: true,
-    },
-    {
       model: 'academicYear',
       path: 'academicYear',
       required: true,
-    },
-    {
-      model: 'arrayOfStrings',
-      path: 'resources',
-      default: [],
     },
     {
       type: 'String',
@@ -31,14 +21,16 @@ module.exports = {
       required: true,
     },
   ],
-  updateClassroom: [
+  getClassroom: [
     {
       type: 'String',
       path: 'id',
       required: true,
     },
+  ],
+  updateClassroom: [
     {
-      model: 'classCapacity',
+      model: 'capacity',
       path: 'capacity',
     },
     {
@@ -46,22 +38,12 @@ module.exports = {
       path: 'grade',
     },
     {
-      model: 'section',
-      path: 'section',
-    },
-    {
       model: 'academicYear',
       path: 'academicYear',
     },
     {
-      model: 'arrayOfStrings',
-      path: 'resources',
-    },
-  ],
-  getClassroom: [
-    {
-      type: 'String',
       path: 'id',
+      type: 'String',
       required: true,
     },
   ],
@@ -72,34 +54,17 @@ module.exports = {
       required: true,
     },
   ],
-  listClassroomResources: [
+  enrollStudent: [
     {
       type: 'String',
       path: 'id',
       required: true,
     },
   ],
-  addResource: [
+  unEnrollStudent: [
     {
       type: 'String',
       path: 'id',
-      required: true,
-    },
-    {
-      model: 'text',
-      path: 'resource',
-      required: true,
-    },
-  ],
-  removeResource: [
-    {
-      type: 'String',
-      path: 'id',
-      required: true,
-    },
-    {
-      model: 'text',
-      path: 'resource',
       required: true,
     },
   ],

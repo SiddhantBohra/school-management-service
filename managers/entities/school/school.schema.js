@@ -1,12 +1,12 @@
 module.exports = {
   createSchool: [
     {
-      model: 'shortText',
+      model: 'text',
       path: 'name',
       required: true,
     },
     {
-      model: 'address',
+      model: 'longText',
       path: 'address',
       required: true,
     },
@@ -15,31 +15,27 @@ module.exports = {
       path: 'phone',
       required: true,
     },
+  ],
+  getSchool: [
     {
-      model: 'email',
-      path: 'email',
+      type: 'String',
+      path: 'id',
       required: true,
     },
   ],
   updateSchool: [
     {
-      model: 'shortText',
+      model: 'text',
       path: 'name',
     },
     {
-      model: 'address',
+      model: 'longText',
       path: 'address',
     },
     {
       model: 'phone',
       path: 'phone',
     },
-    {
-      model: 'email',
-      path: 'email',
-    },
-  ],
-  getSchool: [
     {
       type: 'String',
       path: 'id',

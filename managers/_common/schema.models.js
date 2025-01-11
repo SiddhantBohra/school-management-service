@@ -6,11 +6,11 @@ module.exports = {
     type: 'string',
     length: { min: 1, max: 50 },
   },
-  username: {
-    path: 'username',
+  userName: {
+    path: 'userName',
     type: 'string',
     length: { min: 3, max: 20 },
-    custom: 'username',
+    custom: 'userName',
   },
   password: {
     path: 'password',
@@ -62,11 +62,7 @@ module.exports = {
   },
   text: {
     type: 'String',
-    length: { min: 3, max: 15 },
-  },
-  shortText: {
-    type: 'String',
-    length: { min: 3, max: 50 },
+    length: { min: 3, max: 20 },
   },
   longText: {
     type: 'String',
@@ -78,12 +74,16 @@ module.exports = {
   },
   phone: {
     type: 'String',
-    length: 13,
+    length: { min: 10, max: 15 },
+  },
+  gender: {
+    type: 'String',
+    regex: /^(male|female)$/,
   },
   email: {
     type: 'String',
     regex:
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
   },
   number: {
     type: 'Number',
@@ -103,40 +103,21 @@ module.exports = {
     type: 'Boolean',
   },
   role: {
-    type: 'String',
-    regex: /^(superadmin|admin|user)$/,
+    type: 'string',
+    regex: /^(superAdmin|admin|user)$/i,
   },
-  address: {
-    type: 'String',
-    length: { min: 5, max: 200 },
-  },
-  classCapacity: {
+  capacity: {
     type: 'Number',
     min: 1,
-    max: 50,
+    max: 80,
   },
   grade: {
-    type: 'String',
-    regex: /^([1-9]|1[0-2])$/, // Grades 1-12
-  },
-  section: {
-    type: 'String',
-    regex: /^[A-Z]$/, // Sections like A, B, C
+    type: 'Number',
+    min: 1,
+    max: 12,
   },
   academicYear: {
     type: 'String',
-    regex: /^\d{4}-\d{4}$/, // Format: 2023-2024
-  },
-  date: {
-    type: 'String',
-    regex: /^\d{4}-\d{2}-\d{2}$/, // Format: YYYY-MM-DD
-  },
-  gender: {
-    type: 'String',
-    regex: /^(male|female)$/,
-  },
-  bloodGroup: {
-    type: 'String',
-    regex: /^(A|B|AB|O)[+-]$/,
+    regex: /^\d{4}-\d{4}$/,
   },
 };

@@ -1,4 +1,4 @@
-# School Management System API
+# School Management Service
 
 A RESTful API service for managing schools, classrooms, and students with role-based access control.
 
@@ -16,7 +16,7 @@ A RESTful API service for managing schools, classrooms, and students with role-b
 
 ### Technology Stack
 
-- **Runtime**: Node.js
+- **Runtime**: Node.js 20
 - **Framework**: Express.js
 - **Database**: Redis
 - **Authentication**: JWT (two-tier token system)

@@ -1,5 +1,5 @@
 {
-  "name": "axion",
+  "name": "school-management-service",
   "version": "0.1.0",
   "description": "Boilerplate",
   "main": "index.js",
@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@jest/globals": "^29.7.0",
     "aeon-machine": "^0.1.4",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",

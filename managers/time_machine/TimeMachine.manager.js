@@ -58,7 +58,7 @@ module.exports = class TimeMachine {
       items: [createdPost._id],
     });
     const dailyDecrease = Math.floor(
-      parseInt(currentScore[createdPost._id]) * 0.05,
+      parseInt(currentScore[createdPost._id]) * 0.05
     );
     this.oyster.call('update_relations', {
       _id: `topic:${darbId}|${createdPost.topic}`,
@@ -113,7 +113,7 @@ module.exports = class TimeMachine {
       if (postKeys.length != 0) {
         const trimmedPosts = postKeys.splice(
           0,
-          Math.ceil(postKeys.length * 0.15),
+          Math.ceil(postKeys.length * 0.15)
         );
         this.oyster.call('update_relations', {
           _id: mixTopic,

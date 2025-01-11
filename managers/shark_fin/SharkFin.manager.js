@@ -58,7 +58,7 @@ module.exports = class SharkFin {
   }
 
   addDirectAccess({ userId, nodeId, action }) {
-    return this.oyster.call('update_relations', {
+    this.oyster.call('update_relations', {
       _id: `user:${userId}`,
       set: {
         _members: [`node:${nodeId}~${this.actions[action]}:!`],
@@ -155,8 +155,8 @@ module.exports = class SharkFin {
     nodeId,
     action,
     isOwner,
-    childLayer,
     role,
+    childLayer,
   }) {
     let inqueryActionRank = this._getActionRank({ action, ceil: true });
 
@@ -208,19 +208,18 @@ module.exports = class SharkFin {
       if (layerActionRank >= inqueryActionRank) return true;
     }
     /*******************************USER ACCESS*******************************/
-    console.log(
-      `checking access for role ${role} with layer ${layer} action ${action} userId ${userId} nodeId ${nodeId}`,
-    );
-    if (layerConfig.adminCan && role == 'schoolAdmin') {
+    if (layerConfig.adminCan && role == 'admin') {
       const layerAdminActionRank = this._getActionRank({
         action: layerConfig.adminCan,
       });
+      // console.log(`layerActionRank>`, layerAdminActionRank, inqueryActionRank, layerConfig.adminCan, action);
       if (layerAdminActionRank >= inqueryActionRank) return true;
     }
-    if (layerConfig.superAdminCan && role == 'superadmin') {
+    if (layerConfig.superAdminCan && role == 'superAdmin') {
       const layerSuperAdminActionRank = this._getActionRank({
         action: layerConfig.superAdminCan,
       });
+      // console.log(`layerActionRank>>`, layerSuperAdminActionRank, inqueryActionRank, layerConfig.superAdminCan, action);
       if (layerSuperAdminActionRank >= inqueryActionRank) return true;
     }
     /******************************DIRECT ACCESS******************************/

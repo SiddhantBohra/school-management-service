@@ -1,13 +1,9 @@
 module.exports = {
   createStudent: [
     {
-      model: 'shortText',
       path: 'name',
-      required: true,
-    },
-    {
-      model: 'date',
-      path: 'dateOfBirth',
+      type: 'String',
+      length: { min: 1, max: 50 },
       required: true,
     },
     {
@@ -16,90 +12,32 @@ module.exports = {
       required: true,
     },
     {
-      model: 'shortText',
-      path: 'parentName',
-      required: true,
-    },
-    {
-      model: 'phone',
-      path: 'parentPhone',
-      required: true,
-    },
-    {
-      model: 'email',
-      path: 'email',
-      required: true,
-    },
-    {
-      model: 'date',
-      path: 'enrollmentDate',
-      required: true,
-    },
-    {
-      model: 'bloodGroup',
-      path: 'bloodGroup',
-      required: true,
-    },
-    {
-      model: 'phone',
-      path: 'emergencyContact',
-      required: true,
-    },
-    {
-      model: 'arrayOfStrings',
-      path: 'medicalConditions',
-      default: [],
-    },
-    {
-      type: 'String',
       path: 'classroomId',
-      required: false,
+      type: 'String',
+      required: true,
     },
+  ],
+  getStudent: [
     {
       type: 'String',
-      path: 'schoolId',
+      path: 'id',
       required: true,
     },
   ],
   updateStudent: [
     {
-      model: 'shortText',
       path: 'name',
-    },
-    {
-      model: 'date',
-      path: 'dateOfBirth',
+      type: 'String',
+      length: { min: 1, max: 50 },
     },
     {
       model: 'gender',
       path: 'gender',
     },
     {
-      model: 'shortText',
-      path: 'parentName',
+      path: 'classroomId',
+      type: 'String',
     },
-    {
-      model: 'phone',
-      path: 'parentPhone',
-    },
-    {
-      model: 'email',
-      path: 'email',
-    },
-    {
-      model: 'bloodGroup',
-      path: 'bloodGroup',
-    },
-    {
-      model: 'phone',
-      path: 'emergencyContact',
-    },
-    {
-      model: 'arrayOfStrings',
-      path: 'medicalConditions',
-    },
-  ],
-  getStudent: [
     {
       type: 'String',
       path: 'id',
@@ -113,15 +51,17 @@ module.exports = {
       required: true,
     },
   ],
-  transferStudent: [
+  enrollStudent: [
     {
       type: 'String',
-      path: 'studentId',
+      path: 'id',
       required: true,
     },
+  ],
+  unEnrollStudent: [
     {
       type: 'String',
-      path: 'newClassroomId',
+      path: 'id',
       required: true,
     },
   ],
